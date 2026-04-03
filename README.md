@@ -20,6 +20,7 @@ Add the marketplace and install the plugins you want:
 claude plugin marketplace add marcoscouto/claude-plugins-example
 
 # install the plugins you want
+# note: claude-plugins-example becomes "plugins-example" after the "claude-" prefix is stripped
 claude plugin install git-tools@plugins-example
 claude plugin install websec@plugins-example
 ```
