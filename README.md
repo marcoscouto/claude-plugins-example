@@ -16,13 +16,12 @@ A collection of plugins for [Claude Code](https://claude.ai/code) with tools for
 Add the marketplace and install the plugins you want:
 
 ```bash
-# git-tools
-claude plugin marketplace add marcoscouto/claude-plugins-example --sparse git-tools/
-claude plugin install git-tools@claude-plugins-example
+# add the marketplace (only needed once)
+claude plugin marketplace add marcoscouto/claude-plugins-example
 
-# websec
-claude plugin marketplace add marcoscouto/claude-plugins-example --sparse websec/
-claude plugin install websec@claude-plugins-example
+# install the plugins you want
+claude plugin install git-tools@plugins-example
+claude plugin install websec@plugins-example
 ```
 
 ### Option 2 — Session only (local clone)

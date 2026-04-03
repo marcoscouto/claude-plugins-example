@@ -1,0 +1,22 @@
+{
+  "name": "plugins-example",
+  "owner": {
+    "name": "marcoscouto"
+  },
+  "plugins": [
+    {
+      "name": "git-tools",
+      "description": "Git productivity tools — PR review and more",
+      "category": "development",
+      "source": "./git-tools",
+      "homepage": "https://github.com/marcoscouto/claude-plugins-example/tree/main/git-tools"
+    },
+    {
+      "name": "websec",
+      "description": "Web security tools — dependency vulnerability analysis and more",
+      "category": "development",
+      "source": "./websec",
+      "homepage": "https://github.com/marcoscouto/claude-plugins-example/tree/main/websec"
+    }
+  ]
+}
