@@ -177,25 +177,29 @@ Check if the `mcp__excalidraw__*` tools are available. If yes:
 Generate a valid Excalidraw JSON file that visually represents the **technical flow** from `technical.md`. Follow these rules:
 
 1. Use Excalidraw's JSON format: `{ "type": "excalidraw", "version": 2, "source": "arch-analyze", "elements": [...], "appState": { "gridSize": null, "viewBackgroundColor": "#ffffff" }, "files": {} }`
-2. Represent each component as a **rectangle** element with a descriptive label.
-3. Represent data flows as **arrow** elements connecting components.
-4. Group related components with a **frame** or visually close positioning.
+2. Represent each component as a **rectangle** + a bound **text** element (see templates below).
+3. Represent data flows as **arrow** elements connecting components. Arrow labels use a separate floating **text** element positioned near the midpoint of the arrow.
+4. Group related components with background zone rectangles (low opacity, dashed border) and a floating text label above each zone.
 5. Use clear, readable labels. Keep the layout left-to-right for flows, top-to-bottom for layers.
 6. Color coding (use `backgroundColor`):
-   - Entry points (API, CLI, UI): `#e3f2fd` (light blue)
-   - Domain / business logic: `#f3e5f5` (light purple)
-   - Infrastructure (DB, queue, cache): `#e8f5e9` (light green)
-   - External services: `#fff3e0` (light orange)
-   - Inter-project boundaries: `#fce4ec` (light red)
+   - Zone backgrounds / entry points (API, CLI, UI): `#d0ebff` (light blue)
+   - Domain / business logic: `#f3d9fa` (light purple)
+   - Infrastructure (DB, queue, cache): `#d3f9d8` (light green)
+   - External services: `#ffe8cc` (light orange)
 
-Element template for a rectangle:
+> **IMPORTANT — how Excalidraw text works in JSON:**
+> The `"label"` property on rectangles and arrows is **ignored** when loading JSON manually.
+> Text must always be a separate element of `"type": "text"`.
+> To bind text inside a rectangle, use `"boundElements"` on the rectangle and `"containerId"` on the text element.
+
+Element template for a rectangle **with bound text** (pair — always emit both together):
 ```json
 {
-  "id": "<unique-id>",
+  "id": "rect-foo",
   "type": "rectangle",
-  "x": <number>,
-  "y": <number>,
-  "width": 160,
+  "x": 100,
+  "y": 100,
+  "width": 200,
   "height": 60,
   "angle": 0,
   "strokeColor": "#1e1e1e",
@@ -206,19 +210,43 @@ Element template for a rectangle:
   "roughness": 0,
   "opacity": 100,
   "roundness": { "type": 3 },
-  "label": { "text": "<Component Name>", "fontSize": 14, "fontFamily": 1, "textAlign": "center", "verticalAlign": "middle" }
+  "boundElements": [{ "type": "text", "id": "lbl-foo" }]
+},
+{
+  "id": "lbl-foo",
+  "type": "text",
+  "x": 100,
+  "y": 113,
+  "width": 200,
+  "height": 35,
+  "angle": 0,
+  "strokeColor": "#1e1e1e",
+  "backgroundColor": "transparent",
+  "fillStyle": "solid",
+  "strokeWidth": 1,
+  "strokeStyle": "solid",
+  "roughness": 0,
+  "opacity": 100,
+  "containerId": "rect-foo",
+  "text": "Component Name\n(subtitle)",
+  "fontSize": 13,
+  "fontFamily": 1,
+  "textAlign": "center",
+  "verticalAlign": "middle"
 }
 ```
 
-Element template for an arrow:
+> Note: for a 2-line label at `fontSize: 13`, set `"height": 35` on the text element and `"y": rect.y + 13` (approximately centered within the 60px rect height).
+
+Element template for an **arrow** (no label property — use a separate floating text near the midpoint if a label is needed):
 ```json
 {
-  "id": "<unique-id>",
+  "id": "arr-foo-bar",
   "type": "arrow",
   "x": <start-x>,
   "y": <start-y>,
-  "width": <width>,
-  "height": <height>,
+  "width": <dx>,
+  "height": <dy>,
   "angle": 0,
   "strokeColor": "#1e1e1e",
   "backgroundColor": "transparent",
@@ -229,8 +257,28 @@ Element template for an arrow:
   "opacity": 100,
   "startBinding": { "elementId": "<source-id>", "gap": 8, "focus": 0 },
   "endBinding": { "elementId": "<target-id>", "gap": 8, "focus": 0 },
-  "label": { "text": "<optional flow label>", "fontSize": 12 },
   "points": [[0, 0], [<dx>, <dy>]]
+},
+{
+  "id": "lbl-arr-foo-bar",
+  "type": "text",
+  "x": <midpoint-x>,
+  "y": <midpoint-y - 16>,
+  "width": 80,
+  "height": 17,
+  "angle": 0,
+  "strokeColor": "#555",
+  "backgroundColor": "transparent",
+  "fillStyle": "solid",
+  "strokeWidth": 1,
+  "strokeStyle": "solid",
+  "roughness": 0,
+  "opacity": 100,
+  "text": "<flow label>",
+  "fontSize": 11,
+  "fontFamily": 1,
+  "textAlign": "center",
+  "verticalAlign": "top"
 }
 ```
 
