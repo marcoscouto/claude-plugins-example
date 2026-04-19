@@ -17,6 +17,13 @@
       "category": "development",
       "source": "./websec",
       "homepage": "https://github.com/marcoscouto/claude-plugins-example/tree/main/websec"
+    },
+    {
+      "name": "arch-tools",
+      "description": "Architecture analysis — ubiquitous language, technical overview, and Excalidraw diagrams",
+      "category": "development",
+      "source": "./arch-tools",
+      "homepage": "https://github.com/marcoscouto/claude-plugins-example/tree/main/arch-tools"
     }
   ]
 }
