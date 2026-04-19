@@ -138,12 +138,46 @@ Check which package manifests exist:
 |---|---|---|
 | File location | `commands/*.md` | `skills/<name>/SKILL.md` |
 | Frontmatter `name` | Not required (filename is the name) | Required |
-| Accepts arguments | Yes — via `$ARGUMENTS` | No |
+| Accepts arguments | Yes — via `$ARGUMENTS` | Yes — via `$ARGUMENTS` if `user-invocable: true` |
 | User-invocable | Always | Only if `user-invocable: true` |
 | Agent-invocable | No | Yes |
 
-Use a **command** when the user needs to pass arguments (e.g. a PR number, a file path).  
-Use a **skill** when Claude should be able to trigger it automatically based on context, or when no arguments are needed.
+Use a **command** when the interaction is simple and argument-driven (e.g. a PR number).
+Use a **skill** when Claude should be able to trigger it automatically based on context, or when the prompt is complex enough to warrant structured multi-step instructions.
+
+Skills can also accept arguments and flags when `user-invocable: true`. Parse `$ARGUMENTS` manually inside the skill body (see the `arch-analyze` example below).
+
+### Example — `arch-tools/skills/arch-analyze/SKILL.md` (skill with arguments and flags)
+
+```markdown
+---
+name: arch-analyze
+description: Analyze the architecture of one or more projects — generates ubiquitous language docs, technical overview, and optionally an Excalidraw diagram
+user-invocable: true
+---
+
+Analyze the architecture of the project(s) specified in: $ARGUMENTS
+
+**Parsing arguments**
+
+Parse `$ARGUMENTS` as follows:
+- Extract all path arguments (everything that is not a flag). Default to current directory if none.
+- Check if `--draw` flag is present. If yes, also generate an Excalidraw diagram.
+
+**Step 1 — Explore each project**
+...
+
+**Step 2 — Generate `ubiquitous-language.md`**
+...
+
+**Step 3 — Generate `technical-overview.md`**
+...
+
+**Step 4 — Generate Excalidraw diagram (only if `--draw` was given)**
+...
+```
+
+**Invoked as:** `/arch-analyze ./serviceA ./serviceB --draw`
 
 ---
 

@@ -1,6 +1,6 @@
 # Claude Code Plugins
 
-A collection of plugins for [Claude Code](https://claude.ai/code) with tools for Git workflows and web security analysis.
+A collection of plugins for [Claude Code](https://claude.ai/code) with tools for Git workflows, web security analysis, and architecture documentation.
 
 ## Plugins
 
@@ -8,6 +8,7 @@ A collection of plugins for [Claude Code](https://claude.ai/code) with tools for
 |--------|-------------|
 | [`git-tools`](./git-tools) | Git productivity tools — PR review and more |
 | [`websec`](./websec) | Web security tools — dependency vulnerability analysis and more |
+| [`arch-tools`](./arch-tools) | Architecture analysis — ubiquitous language, technical overview, and Excalidraw diagrams |
 
 ## Installation
 
@@ -23,6 +24,7 @@ claude plugin marketplace add marcoscouto/claude-plugins-example
 # note: claude-plugins-example becomes "plugins-example" after the "claude-" prefix is stripped
 claude plugin install git-tools@plugins-example
 claude plugin install websec@plugins-example
+claude plugin install arch-tools@plugins-example
 ```
 
 ### Option 2 — Session only (local clone)
@@ -31,7 +33,8 @@ If you already have the repo cloned, load plugins for a single session without i
 
 ```bash
 claude --plugin-dir ~/path/to/claude-code-plugins/git-tools \
-       --plugin-dir ~/path/to/claude-code-plugins/websec
+       --plugin-dir ~/path/to/claude-code-plugins/websec \
+       --plugin-dir ~/path/to/claude-code-plugins/arch-tools
 ```
 
 ### Managing plugins
@@ -66,6 +69,34 @@ Analyzes project dependencies for known security vulnerabilities using available
 ```
 /dependencies-analysis
 ```
+
+### arch-tools
+
+#### `/arch-analyze`
+
+Analyzes the architecture of one or more projects — generates a ubiquitous language document, a technical overview, and optionally an Excalidraw diagram.
+
+```
+# analyze current directory
+/arch-analyze
+
+# analyze a specific project
+/arch-analyze ./my-project
+
+# analyze with diagram
+/arch-analyze ./my-project --draw
+
+# analyze multiple projects with diagram
+/arch-analyze ./serviceA ./serviceB --draw
+```
+
+**Generated files:**
+
+| File | Description |
+|------|-------------|
+| `ubiquitous-language.md` | Bounded contexts, domain terms, events, and business rules |
+| `technical-overview.md` | Stack, architecture style, components, data flow, and inter-project relations |
+| `arch-diagram.excalidraw` | Visual flow diagram (only with `--draw`) — open in [excalidraw.com](https://excalidraw.com) or the VS Code extension |
 
 ## Contributing
 
