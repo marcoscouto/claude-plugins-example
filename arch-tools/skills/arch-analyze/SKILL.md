@@ -2,6 +2,7 @@
 name: arch-analyze
 description: Analyze the architecture of one or more projects — generates ubiquitous language docs, technical overview, and optionally an Excalidraw diagram
 user-invocable: true
+allowed-tools: mcp__excalidraw__*
 ---
 
 Analyze the architecture of the project(s) specified in: $ARGUMENTS
@@ -9,13 +10,15 @@ Analyze the architecture of the project(s) specified in: $ARGUMENTS
 **Parsing arguments**
 
 Parse `$ARGUMENTS` as follows:
-- Extract all path arguments (everything that is not a flag). If no paths are given, use the current working directory.
+- Extract all path arguments (everything that looks like a filesystem path and is not a flag). If no paths are given, use the current working directory.
 - Check if `--draw` flag is present. If yes, a diagram will also be generated.
+- Check if `--output <dir>` (or `-o <dir>`) is present. If yes, use `<dir>` as the output directory for all generated files. If not given, default to `./docs` relative to the current working directory. Create the output directory if it does not exist.
 
 Example inputs:
-- `/path/to/project` → analyze one project, no diagram
-- `/path/to/project --draw` → analyze one project + generate diagram
-- `/path/to/projectA /path/to/projectB --draw` → analyze two projects + generate diagram
+- `/path/to/project` → analyze one project, no diagram, output to `./docs`
+- `/path/to/project --draw` → analyze one project + generate diagram, output to `./docs`
+- `/path/to/project --output /tmp/out` → analyze one project, output to `/tmp/out`
+- `/path/to/projectA /path/to/projectB --draw -o ./arch-docs` → analyze two projects + diagram, output to `./arch-docs`
 
 ---
 
@@ -39,9 +42,9 @@ For every project path provided:
 
 ---
 
-**Step 2 — Generate `ubiquitous-language.md`**
+**Step 2 — Generate `business.md`**
 
-Save this file at the root of the first project path (or current directory if no path given).
+Save this file inside the output directory resolved in the argument parsing step.
 
 Structure:
 
@@ -88,9 +91,9 @@ Terms that appear across multiple bounded contexts and their unified meaning.
 
 ---
 
-**Step 3 — Generate `technical-overview.md`**
+**Step 3 — Generate `technical.md`**
 
-Save this file at the root of the first project path (or current directory if no path given).
+Save this file inside the output directory resolved in the argument parsing step.
 
 Structure:
 
@@ -160,9 +163,18 @@ Describe the main request/event flow through the system step by step.
 
 **Step 4 — Generate Excalidraw diagram (only if `--draw` was given)**
 
-Save the file as `arch-diagram.excalidraw` at the root of the first project path (or current directory).
+Save the file as `diagram.excalidraw` inside the output directory resolved in the argument parsing step.
 
-Generate a valid Excalidraw JSON file that visually represents the **technical flow** from `technical-overview.md`. Follow these rules:
+**Preferred path — use the Excalidraw MCP:**
+
+Check if the `mcp__excalidraw__*` tools are available. If yes:
+1. Use the MCP tools to generate the diagram based on the components and flows discovered during analysis.
+2. Pass a clear description of the architecture: components, their types (entry point, domain, infra, external), and the connections between them with labels.
+3. Save the result returned by the MCP as `diagram.excalidraw`.
+
+**Fallback — generate JSON manually (if MCP is unavailable):**
+
+Generate a valid Excalidraw JSON file that visually represents the **technical flow** from `technical.md`. Follow these rules:
 
 1. Use Excalidraw's JSON format: `{ "type": "excalidraw", "version": 2, "source": "arch-analyze", "elements": [...], "appState": { "gridSize": null, "viewBackgroundColor": "#ffffff" }, "files": {} }`
 2. Represent each component as a **rectangle** element with a descriptive label.
@@ -233,10 +245,12 @@ After generating all files, output a brief summary to the user:
 ```
 ## arch-analyze complete
 
+Output directory: <resolved output path>
+
 Files generated:
-- ubiquitous-language.md  — domain terms and bounded contexts
-- technical-overview.md   — stack, components, and data flow
-[- arch-diagram.excalidraw — Excalidraw diagram (open with excalidraw.com or VS Code extension)]
+- business.md          — domain terms and bounded contexts
+- technical.md         — stack, components, and data flow
+[- diagram.excalidraw  — Excalidraw diagram (open with excalidraw.com or VS Code extension)]
 
 Projects analyzed: <list>
 Bounded contexts found: <list>
